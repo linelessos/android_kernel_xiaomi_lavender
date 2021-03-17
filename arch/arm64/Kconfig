@@ -218,6 +218,12 @@ config ARM64_DMA_USE_IOMMU
 	select ARM_HAS_SG_CHAIN
 	select NEED_SG_DMA_LENGTH
 
+config MACH_XIAOMI_LAVENDER
+    default n
+        bool "Custom for hardware Xiaomi RedNote 7 / 7s"
+        help
+                Custom for F7A_pcb.
+
 if ARM64_DMA_USE_IOMMU
 
 config ARM64_DMA_IOMMU_ALIGNMENT
