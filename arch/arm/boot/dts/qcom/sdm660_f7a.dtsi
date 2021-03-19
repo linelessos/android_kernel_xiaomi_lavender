@@ -1,0 +1,113 @@
+/* Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
+ * Copyright (C) 2021 Erik Castricum
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "skeleton64.dtsi"
+#include "sdm660.dtsi"
+#include <dt-bindings/clock/qcom,gcc-sdm660.h>
+#include <dt-bindings/clock/qcom,gpu-sdm660.h>
+#include <dt-bindings/clock/qcom,mmcc-sdm660.h>
+#include <dt-bindings/clock/qcom,rpmcc.h>
+#include <dt-bindings/clock/audio-ext-clk.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/regulator/qcom,rpm-smd-regulator.h>
+#include <dt-bindings/clock/qcom,cpu-osm.h>
+
+/ {
+	firmware: firmware {
+		android {
+			compatible = "android,firmware";
+				vbmeta {
+				compatible = "android,vbmeta";
+				parts = "vbmeta,boot,system,vendor,dtbo,recovery";
+			};
+
+			fstab {
+				vendor {
+					fsmgr_flags = "wait,avb";
+				};
+			};
+		};
+	};
+
+	reserved-memory {
+		cont_splash_mem: splash_region@9d400000 {
+			reg = <0x0 0x9d400000 0x0 0x02400000>;
+		};
+
+		/delete-node/ dfps_data_mem@0x9f7ff000;
+
+		dfps_data_mem: dfps_data_mem@0x9f800000 {
+			reg = <0 0x9f800000 0 0x00001000>;
+			label = "dfps_data_mem";
+		};
+
+		pstore_reserve_mem: pstore_reserve_mem_region@0 {
+			linux,reserve-contiguous-region;
+			linux,reserve-region;
+			linux,remove-completely;
+			reg = <0x0 0xA0000000 0x0 0x00400000>;
+			label = "pstore_reserve_mem";
+		};
+	};
+};
+
+&soc {
+	/delete-node/ qcom,qbt1000;
+
+	qcom,sensor-information {
+		sensor_information22: qcom,sensor-information-22 {
+			qcom,sensor-type = "adc";
+			qcom,sensor-name = "backlight_therm";
+		};
+	};
+
+	qcom,rmtfs_sharedmem@85e00000 {
+		compatible = "qcom,sharedmem-uio";
+		reg = <0x85e00000 0x200000>;
+		reg-names = "rmtfs";
+		qcom,client-id = <0x00000001>;
+	};
+
+	qcom,rmnet-ipa {
+		/delete-property/ cpu-affinity;
+	};
+
+	qseecom@86d00000 {
+		qcom,qsee-reentrancy-support = <0>;
+	};
+
+	sn_fuse: snfuse@0xA4128 {
+		compatible = "qcom,sn-fuse";
+		reg = <0x786134 0x4>,
+			<0x78607C 0x4>;
+		reg-names = "sn-base","fuse-state";
+	};
+};
+
+&mem_client_3_size {
+	qcom,allocate-boot-time;
+};
+
+&pil_modem {
+	/delete-property/ qcom,complete-ramdump;
+};
+
+&ufs1 {
+	/delete-property/ pinctrl-names;
+	/delete-property/ pinctrl-0;
+	/delete-property/ pinctrl-1;
+};
+
+#include "msm-pm660_f7a.dtsi"
+#include "sdm660-common_f7a.dtsi"
